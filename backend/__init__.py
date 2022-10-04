@@ -2,10 +2,10 @@ from flask import Flask
 
 global memcache
 
-webapp = Flask(__name__)
+app = Flask(__name__)
 memcache = {}
 
-from app import main
+from backend import main
 
 
 

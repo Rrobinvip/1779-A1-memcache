@@ -1,4 +1,4 @@
-# ECE 1779 A1 MEMCACHE
+# ECE 1779 A1 MEMCACHE - Group 17
 ## 5 key components:
 1. The web browser that initiates requests
 2. The web front end that manages requests and operations
@@ -8,7 +8,7 @@
 
 ## To do list
 ### P1 Front end 
-1. A page to upload a new pair of key and image
+1. ~~A page to upload a new pair of key and image~~
 2. A page that shows an image associated with a given key
 3. A page that displays all the available keys stored in the database
 4. A page to configure the mem-cache parameters (e.g., capacity in MB, replacement policy) as well as clear the cache. 
@@ -30,5 +30,6 @@
 1. P1.1, the key should be used to uniquely identify its image. A subsequent upload with the same key will replace the image stored previously. The web front end should store the image in the local file system, and add the key to the list of known keys in the database. Upon an update, the mem-cache entry with this key should be invalidated.
 2. Configuration parameters and statistic of memcache needs to be stored in DB.
 3. Memcache needs to update its status every 5 sec.
+4. API for access and testing. 
 
 **Still editing..**
