@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# macOS file 
+*.DS_Store
+
+# Project dir
+frontend/static/uploads
+
 # C extensions
 *.so
 
