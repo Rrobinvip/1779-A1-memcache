@@ -1,4 +1,17 @@
 # ECE 1779 A1 MEMCACHE - Group 17
+
+## To create environment:
+1. Create the environment from the `environment.yml`
+`conda env create -f environment.yml`
+2. Activate the new environment, in this case, the `<name_env>` is `MEMCACHE`
+`conda activate <name_env>`
+3. Inspect packages
+`conda list`
+
+## To run:
+1. At base dir
+`python3 run.py`
+
 ## 5 key components:
 1. The web browser that initiates requests
 2. The web front end that manages requests and operations
