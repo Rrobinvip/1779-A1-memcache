@@ -14,7 +14,7 @@
 
     <body>
         <!-- USAGE: When rendering the template, tag#_selected needs to be defined as True/False as part of the rendering argument to achieve visual effect of the button -->
-        <nav class="navbar navbar-expand-lg navbar-default bg-light">
+        <nav class="navbar navbar-expand-lg navbar-default bg-light mx-5">
             <a class="navbar-brand" href="{{ url_for('upload_picture') }}">Upload</a>
             
             <!-- Responsive collapse on navbar. -->
@@ -27,7 +27,7 @@
                     <!-- TODO: Complete url_for() -->
                     {% if tag1_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="#"> Key-picture </a>
+                        <a class="nav-link active" href="#"> Key-picture </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -38,18 +38,18 @@
                     <!-- TODO: Complete url_for() -->
                     {% if tag2_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="#"> All pairs </a>
+                        <a class="nav-link active" href="{{ url_for('all_pairs') }}"> All pairs </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"> All pairs </a>
+                        <a class="nav-link" href="{{ url_for('all_pairs') }}"> All pairs </a>
                     </li>
                     {% endif %}
 
                     <!-- TODO: Complete url_for() -->
                     {% if tag3_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="#"> Mem-cache config </a>
+                        <a class="nav-link active" href="#"> Mem-cache config </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -60,7 +60,7 @@
                     <!-- TODO: Complete url_for() -->
                     {% if tag4_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="#"> Mem-cache status </a>
+                        <a class="nav-link active" href="#"> Mem-cache status </a>
                     </li>
                     {% else %}
                     <li class="nav-item">

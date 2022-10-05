@@ -4,6 +4,11 @@ from flask import json, flash
 from frontend import app
 from frontend.form import UploadForm, pictures
 
+# Data model
+from frontend.data import Data
+
+sql_connection = Data()
+
 @app.route('/')
 def main():
     return render_template("main.html")
@@ -18,6 +23,13 @@ def upload_picture():
         key = picture_form.key.data
         flash("Upload success")
         print(filename, key)
+        sql_connection.add_entry(key, filename)
         return redirect(url_for("upload_picture"))
     
     return render_template("upload.html", form = picture_form)
+
+@app.route("/allpairs")
+def all_pairs():
+    data = sql_connection.inspect_all_entries()
+    
+    return render_template("all_pairs.html", items=data, tag2_selected=True)
