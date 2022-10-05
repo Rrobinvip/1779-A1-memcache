@@ -16,8 +16,10 @@ def main():
 
 @app.route('/test')
 def test():
-    sql_connection.insert_config_data(1,0)
-    return "Success"
+    sql_connection.insert_config_data(4,1)
+    data = sql_connection.get_config_data()
+    return data
+    
 
 
 
