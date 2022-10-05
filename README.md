@@ -54,4 +54,5 @@
 	Table statistics:
 	`Create Table If Not Exists statistics(id INT NOT NULL AUTO_INCREMENT, itemNum INT NOT NULL, itemSize FLOAT NOT NULL, requestNum INT NOT NULL, missRate FLOAT NOT NULL, hitRate FLOAT NOT NULL, CONSTRAINT statistics_pk PRIMARY KEY(id));`
 
+Push Example
 **Still editing..**
