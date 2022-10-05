@@ -3,6 +3,9 @@ import mysql.connector as MySQL
 from datetime import datetime
 from mysql.connector import errorcode
 
+#This class provide backend database access. It provides funciton to query data from
+#and insert into configuration and statistics database
+#Already tested
 
 class Data:
     cursor = None
@@ -32,6 +35,7 @@ class Data:
         print("Backend DB Connection Success.")
 
     #get the data from the configuration table
+    #this function will return the latest memcache config
     def get_config_data(self):
         #select the latest configuraiton from the database
         query = """
@@ -40,7 +44,7 @@ class Data:
                 )
                 """
         self.cursor.execute(query)
-        print("Query Executed")
+        print("Config Query Executed")
         data = self.cursor.fetchall()
         return data
     
@@ -56,6 +60,37 @@ class Data:
 
         self.cursor.execute(query)
         self.cnx.commit()
+
+    #get the data from the statistics table
+    #this function will return the latest statistics in the table
+    def get_stat_data(self):
+        #select the latest configuration from the database
+        query = """
+                SELECT * FROM statistics WHERE id = (
+                    SELECT MAX(id) From statistics
+                )
+        """
+        self.cursor.execute(query)
+        print("Statistics Query Executed")
+        data = self.cursor.fetchall()
+        return data
+    
+    #insert data into statistics table
+    #itemNum: the number of item
+    #itemSize: the size of the current item in memcache
+    #requestNum: the number of request
+    #missRate: miss times/ number of request
+    #hitRate: hit times/ number of request
+    def insert_stat_data(self,itemNum,itemSize,requestNum,missRate,hitRate):
+        query = """
+                INSERT INTO `statistics` (`itemNum`,`itemSize`,`requestNum`,`missRate`,`hitRate`)
+                VALUES("{}","{}","{}","{}","{}");
+        """.format(itemNum,itemSize,requestNum,missRate,hitRate)
+        self.cursor.execute(query)
+        self.cnx.commit()
+    
+    
+    
         
 
 
