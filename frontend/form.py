@@ -1,3 +1,4 @@
+from re import L
 from flask_uploads import UploadSet, IMAGES, configure_uploads
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FileField
@@ -22,3 +23,12 @@ class UploadForm(FlaskForm):
         ]
     )
     submit = SubmitField("Upload")
+
+class SearchForm(FlaskForm):
+    key = StringField(
+        "Key",
+        validators=[
+            DataRequired()
+        ]
+    )
+    submit = SubmitField("Search")

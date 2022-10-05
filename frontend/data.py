@@ -48,5 +48,16 @@ class Data:
         self.cursor.execute(query)
         data = self.cursor.fetchall()
 
-        print(data)
+        # print(data)
+        return data
+
+    def search_key(self, key):
+        query = """
+                SELECT * FROM `pairs` WHERE `key`="{}";
+                """.format(key)
+
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+
+        print("searched data :", data)
         return data
