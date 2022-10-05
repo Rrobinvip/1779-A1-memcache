@@ -11,7 +11,7 @@ sql_connection = Data()
 
 @app.route('/')
 def main():
-    return render_template("main.html")
+    return redirect(url_for("upload_picture"))
 
 
 @app.route('/upload', methods=["GET", "POST"])
