@@ -22,7 +22,7 @@ class Data:
             )
         except MySQL.Error as err:
             #add database error code
-            if err.errno == errocode.ER_ACCESS_DENIED_ERROR:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something wrong with user name and password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 print("Database does not exist")
