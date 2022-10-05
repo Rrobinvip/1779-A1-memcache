@@ -16,8 +16,8 @@ def main():
 
 @app.route('/test')
 def test():
-    sql_connection.insert_config_data(4,1)
-    data = sql_connection.get_config_data()
+    sql_connection.insert_stat_data(1,2.0,3,0.5,0.5)
+    data = sql_connection.get_stat_data()
     return data
     
 

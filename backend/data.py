@@ -82,10 +82,12 @@ class Data:
     #missRate: miss times/ number of request
     #hitRate: hit times/ number of request
     def insert_stat_data(self,itemNum,itemSize,requestNum,missRate,hitRate):
+        now = datetime.now()
+        fixed_now = now.strftime('%Y-%m-%d %H:%M:%S')
         query = """
-                INSERT INTO `statistics` (`itemNum`,`itemSize`,`requestNum`,`missRate`,`hitRate`)
-                VALUES("{}","{}","{}","{}","{}");
-        """.format(itemNum,itemSize,requestNum,missRate,hitRate)
+                INSERT INTO `statistics` (`itemNum`,`itemSize`,`requestNum`,`missRate`,`hitRate`,`datetime`)
+                VALUES("{}","{}","{}","{}","{}","{}");
+        """.format(itemNum,itemSize,requestNum,missRate,hitRate,fixed_now)
         self.cursor.execute(query)
         self.cnx.commit()
     
