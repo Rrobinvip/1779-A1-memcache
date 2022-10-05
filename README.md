@@ -23,7 +23,7 @@
 ### P1 Front end 
 1. ~~A page to upload a new pair of key and image~~
 2. A page that shows an image associated with a given key
-3. A page that displays all the available keys stored in the database
+3. ~~A page that displays all the available keys stored in the database~~
 4. A page to configure the mem-cache parameters (e.g., capacity in MB, replacement policy) as well as clear the cache. 
 5. Display a page with the current statistics for the mem-cache over the past 10 minutes
 6. Key-Value memcache, see below for details
