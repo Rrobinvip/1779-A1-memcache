@@ -45,4 +45,13 @@
 3. Memcache needs to update its status every 5 sec.
 4. API for access and testing. 
 
+## Database Schema
+1.	Command Create Database: `Create Database If Not Exists cloudcomputing`
+2.	Select the Database: `Use cloudcomputing`
+3.	Create Tables:
+	Table configuration:
+	`Create Table If Not Exists configuration(id INT NOT NULL AUTO_INCREMENT,capacity INT NOT NULL,replacePolicy TINYINT NOT NULL,CONSTRAINT configuration_pk PRIMARY KEY(id));`
+	Table statistics:
+	`Create Table If Not Exists statistics(id INT NOT NULL AUTO_INCREMENT, itemNum INT NOT NULL, itemSize FLOAT NOT NULL, requestNum INT NOT NULL, missRate FLOAT NOT NULL, hitRate FLOAT NOT NULL, CONSTRAINT statistics_pk PRIMARY KEY(id));`
+
 **Still editing..**
