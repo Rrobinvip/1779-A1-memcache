@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %} All pairs {% endblock %}
+{% block title %} Status {% endblock %}
 
 {% block content%}
     <div class="col-12 mx-auto mt-5">
-        <h1 class="mb-5"> All pairs </h1>
+        <h1 class="mb-5"> Memcache status </h1>
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">id (by SQL)</th>
-                    <th scope="col">key</th>
-                    <th scope="col">filename</th>
-                    <th scope="col">upload time</th>
-                    <th scope="col">img</th>
+                    <th scope="col">col0</th>
+                    <th scope="col">col1</th>
+                    <th scope="col">col2</th>
+                    <th scope="col">col3</th>
+                    <th scope="col">col4</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,7 +22,7 @@
                     <td>{{item[1]}}</td>
                     <td>{{item[2]}}</td>
                     <td>{{item[3]}}</td>
-                    <td><img class="img" style="width:200px;" src="{{ url_for('static', filename='/uploads/'+item[2]) }}" alt=""></td>
+                    <td>{{item[4]}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

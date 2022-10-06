@@ -49,22 +49,22 @@
                     <!-- TODO: Complete url_for() -->
                     {% if tag3_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link active" href="#"> Mem-cache config </a>
+                        <a class="nav-link active" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"> Mem-cache config </a>
+                        <a class="nav-link" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
                     </li>
                     {% endif %}
                     
                     <!-- TODO: Complete url_for() -->
                     {% if tag4_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link active" href="#"> Mem-cache status </a>
+                        <a class="nav-link active" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"> Mem-cache status </a>
+                        <a class="nav-link" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
                     </li>
                     {% endif %}
                 </ul>
