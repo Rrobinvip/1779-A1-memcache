@@ -51,8 +51,19 @@ def start():
 def main():
     return redirect(url_for("upload_picture"))
 
-# TODO
-# Store to backend.
+#This function is front back call example
+@app.route('/test')
+def test():
+    #call the backend url
+    request = requests.get("http://127.0.0.1:5000/backend/test",timeout = 5)
+    #parse the json file
+    result = request.json()
+    #access content in json file
+    print(result["success"])
+    print(result["status"])
+    print(result["message"])
+    return "This is front end test"
+    
 @app.route('/upload', methods=["GET", "POST"])
 def upload_picture():
     picture_form = UploadForm()

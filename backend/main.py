@@ -22,12 +22,18 @@ from backend.helper import create_json_response
 def main():
     return "Here is backend"
 
+#This is front back call example
 @app.route('/test')
 def test():
-    sql_connection.insert_stat_data(100,2.0,3,0.5,0.5)
-    data = sql_connection.get_stat_data()
-    # print("Statistic data at backend before sending: ", data)
-    return jsonify(data)
+    message = "This is message"
+    #generate the json response
+    response = jsonify({
+        "success":"true",
+        "status":200,
+        "message":message
+    })
+    #return json response
+    return response
 
 @app.route('/statistics')
 def stats():
@@ -38,9 +44,8 @@ def stats():
     print(" * Starts")
     return jsonify({
         "success":"true",
-        "statusCode":200,
-        "message":"this is messgae"
-        })
+        "status":200
+            })
     
     
 @app.route('/get', methods=['GET', 'POST'])
