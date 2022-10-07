@@ -2,8 +2,8 @@ import os
 
 class Config():
     DB_CONFIG = {
-        'user':'root',
-        'password':'alanwang',
-        'host':'127.0.0.1',
-        'database':'cloudcomputing'
+        'user':'test_1',
+        'password':'19970808',
+        'host':'localhost',
+        'database':'memcache_test_1'
     }
