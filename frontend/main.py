@@ -5,17 +5,27 @@ from telnetlib import SE
 from flask import render_template, url_for, request, redirect
 from flask import json, flash
 from frontend import app
+import requests
 
 # Picture upload form
 from frontend.form import UploadForm, pictures
 
 # Data model
 from frontend.data import Data
+sql_connection = Data()
 
 # Search form
 from frontend.form import SearchForm
 
-sql_connection = Data()
+
+
+#this function calls the backend statistics before the first request
+@app.before_first_request
+def start():
+    r = requests.get("http://127.0.0.1:5000/backend/statistics",timeout = 5)
+    pass
+
+
 
 @app.route('/')
 def main():
