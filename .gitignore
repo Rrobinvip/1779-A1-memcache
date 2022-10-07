@@ -8,6 +8,7 @@ __pycache__/
 
 # Project dir
 frontend/static/uploads
+frontend/static/local_cache
 
 # C extensions
 *.so

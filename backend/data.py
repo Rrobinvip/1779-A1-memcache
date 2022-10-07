@@ -32,7 +32,7 @@ class Data:
         #initialize cursor of database
         self.cursor = self.cnx.cursor()
 
-        print("Backend DB Connection Success.")
+        print(" - Backend DB Connection Success.")
 
     #get the data from the configuration table
     #this function will return the latest memcache config
@@ -73,6 +73,7 @@ class Data:
         self.cursor.execute(query)
         print("Statistics Query Executed")
         data = self.cursor.fetchall()
+        print("Statistics data at backend: ", data)
         return data
     
     #insert data into statistics table

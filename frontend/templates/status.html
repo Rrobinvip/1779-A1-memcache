@@ -8,11 +8,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">col0</th>
-                    <th scope="col">col1</th>
-                    <th scope="col">col2</th>
-                    <th scope="col">col3</th>
-                    <th scope="col">col4</th>
+                    <th scope="col"># of items</th>
+                    <th scope="col">size of items</th>
+                    <th scope="col"># of requests</th>
+                    <th scope="col">miss rate</th>
+                    <th scope="col">hit rate</th>
+                    <th scope="col">datetime</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,6 +24,7 @@
                     <td>{{item[2]}}</td>
                     <td>{{item[3]}}</td>
                     <td>{{item[4]}}</td>
+                    <td>{{item[5]}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
