@@ -5,6 +5,9 @@ from mysql.connector import errorcode
 from datetime import datetime
 
 class Data:
+    '''
+    This class creates a cursor to achieve DB access. 
+    '''
     cursor = None
     cnx = None
 
