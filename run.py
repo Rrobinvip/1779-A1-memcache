@@ -12,7 +12,7 @@ application = DispatcherMiddleware(frontend_app, {
 })
 
 if __name__ == "__main__":
-    run_simple('localhost', 
+    run_simple('0.0.0.0', 
                port = 5000, 
                application = application,
                use_reloader=True, 
