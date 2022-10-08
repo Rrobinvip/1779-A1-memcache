@@ -1,3 +1,4 @@
+from crypt import methods
 from os import stat
 from flask import render_template, url_for, request,jsonify
 from backend import app, memcache,usage,itemNum,itemSize,requestNum,missRate,hitRate
@@ -39,6 +40,10 @@ def test():
 
 @app.route('/statistics')
 def stats():
+    '''
+    When first request initilized from browser, frondend will call this api to active a thread to 
+    record status. 
+    '''
     print(" * This is running")
     print(" * Call made")
     # status = memcache.getStatus()
@@ -56,6 +61,9 @@ def stats():
     
 @app.route('/get', methods=['GET', 'POST'])
 def get():
+    '''
+    Seach a key in memcache. 
+    '''
     # Get key through different approaches.
     key = None
     if request.method == 'GET' and 'key' in request.args:
@@ -80,6 +88,9 @@ def get():
 
 @app.route('/put', methods=['POST'])
 def put():
+    '''
+    Put a key, value (encoded image), and upload_time into memcache. 
+    '''
     key = request.form.get('key')
     value = request.form.get('value')
     upload_time = request.form.get('upload_time')
@@ -100,11 +111,17 @@ def put():
 
 @app.route('/clear')
 def clear():
+    '''
+    Clean memcache. 
+    '''
     memcache.resetMemcache()
     return jsonify({"Message":"Clear down"}), 200
 
 @app.route('/config', methods=['GET'])
 def config():
+    '''
+    Set memcache configration.
+    '''
     size = 100.0
     replacementPolicy = 1
     if "size" in request.args and "replacement_policy" in request.args:
@@ -113,3 +130,9 @@ def config():
 
     sql_connection.insert_config_data(size, replacementPolicy)
     return jsonify({"Message":"Success update config"}), 200
+
+@app.route('/status', methods=['GET'])
+def status():
+    # This part doesn't work. Because flask cant pass 2D array (from sql) through api. 
+    data = sql_connection.get_stat_data()
+    return data, 200

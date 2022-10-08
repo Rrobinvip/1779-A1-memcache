@@ -66,14 +66,14 @@ class Data:
     def get_stat_data(self):
         #select the latest configuration from the database
         query = """
-                SELECT * FROM statistics WHERE id = (
-                    SELECT MAX(id) From statistics
-                )
-        """
+                select * from statistics
+                ORDER BY `id` DESC
+                LIMIT 120;
+                """
         self.cursor.execute(query)
         print("Statistics Query Executed")
         data = self.cursor.fetchall()
-        print("Statistics data at backend: ", data)
+        # print("Statistics data at backend: ", data)
         return data
     
     #insert data into statistics table

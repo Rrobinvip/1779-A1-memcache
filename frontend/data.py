@@ -31,6 +31,9 @@ class Data:
         self.cursor = self.cnx.cursor()
 
     def add_entry(self, key, filename):
+        '''
+        Inserts an entry into DB. This function will generate a datetime. 
+        '''
         now = datetime.now()
         fixed_now = now.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -45,6 +48,9 @@ class Data:
         self.cnx.commit()
         
     def inspect_all_entries(self):
+        '''
+        Return all entries.
+        '''
         query = """
                 SELECT * FROM `pairs`;
                 """
@@ -55,6 +61,9 @@ class Data:
         return data
 
     def search_key(self, key):
+        '''
+        Search a given key in DB. 
+        '''
         query = """
                 SELECT * FROM `pairs` WHERE `key`="{}";
                 """.format(key)
@@ -63,4 +72,23 @@ class Data:
         data = self.cursor.fetchall()
 
         print("searched data :", data)
+        return data
+
+    #get the data from the statistics table
+    #this function will return the latest statistics in the table
+    def get_stat_data(self):
+        '''
+        Get the data from the statistics table.
+
+        This function will return the latest statistics in the table
+        '''
+        query = """
+                select * from statistics
+                ORDER BY `id` DESC
+                LIMIT 120;
+                """
+        self.cursor.execute(query)
+        print("Statistics Query Executed")
+        data = self.cursor.fetchall()
+        # print("Statistics data at backend: ", data)
         return data
