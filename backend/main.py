@@ -57,25 +57,23 @@ def stats():
 @app.route('/get', methods=['GET', 'POST'])
 def get():
     # Get key through different approaches.
+    key = None
     if request.method == 'GET' and 'key' in request.args:
         key  = escape(request.args.get("key"))
     elif request.method == 'POST':
         key = request.form.get('key')
 
-    if key in memcache:
-        value = memcache[key]
-        response = {"key":key, "value":value}
+    value, upload_time = memcache.get(key)
+    
+    if value != None and upload_time != None:
+        print(" - Backend.main.get : Key found in backend! ")
+        response = {"key":key, "value":value, "upload_time":upload_time}
 
         # NOTICE: create a dict and return it with `jsonify`. Another argument after it is the status code. 
         return jsonify(response), 200
-        
-        # response = app.response_class(
-        #     response=json.dumps(value),
-        #     status=200,
-        #     mimetype='application/json'
-        # )
+
     else:
-        response = {"key":key, "value":"None"}
+        response = {"Message":"Miss"}
         return jsonify(response), 400
 
 

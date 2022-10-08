@@ -106,34 +106,63 @@ def search_key():
     print("* Search init...")
  
     # Get key through different approaches. 
-    if request.method == "GET" and "key" in request.args:
+    if (request.method == "GET" and "key" in request.args):
         key = escape(request.args.get("key"))
+        # Call backend
+        print(" - Frontend.main.search_key : Searching in memcache..")
+        data = api_call("GET", "get", {"key":key})
+
+        # If the backend misses, look up the database. If the backend hits, decrypt the image and store it
+        if data.status_code == 400:
+            print("\t Backend doesn't hold this value, try search in DB..")
+            data = sql_connection.search_key(key)
+            if len(data) == 0:
+                print("\t DB doesn't hold this value. Search end.")
+                flash("No image with this key.")
+            else:
+                filename = data[0][2]
+                upload_time = data[0][3]
+                print("Filename: {} upload_time: {}".format(filename, upload_time))
+        elif data.status_code == 200:
+            data = data.json()
+            value = data["value"]
+            upload_time = data["upload_time"]
+            filename = "image_local_"+key+current_datetime()+".png"
+
+            write_img_local(filename, value)
+            cache_flag = True
+            print("Filename: {} upload_time: {}".format(filename, upload_time))
     elif request.method == "POST" and search_form.validate_on_submit():
         key = search_form.key.data
 
-    # Call backend
-    data = api_call("GET", "get", {"key":key})
+        # Call backend
+        print(" - Frontend.main.search_key : Searching in memcache..")
+        data = api_call("GET", "get", {"key":key})
 
-    # If the backend misses, look up the database. If the backend hits, decrypt the image and store it
-    if data.status_code == 400:
-        print("\t Backend doesn't hold this value, try search in DB..")
-        data = sql_connection.search_key(key)
-        if len(data) == 0:
-            print("\t DB doesn't hold this value. Search end.")
-            flash("No image with this key.")
-        else:
-            filename = data[0][2]
-            upload_time = data[0][3]
+        # This part, where requesting data from memcache, is exactly same as above. Becaause I don't have any good 
+        # ideas to put them into a function. 
+
+        # If the backend misses, look up the database. If the backend hits, decrypt the image and store it
+        if data.status_code == 400:
+            print("\t Backend doesn't hold this value, try search in DB..")
+            data = sql_connection.search_key(key)
+            if len(data) == 0:
+                print("\t DB doesn't hold this value. Search end.")
+                flash("No image with this key.")
+            else:
+                filename = data[0][2]
+                upload_time = data[0][3]
+                print("Filename: {} upload_time: {}".format(filename, upload_time))
+        elif data.status_code == 200:
+            data = data.json()
+            value = data["value"]
+            upload_time = data["upload_time"]
+            filename = "image_local_"+key+".png"
+
+            write_img_local(filename, value)
+            cache_flag = True
             print("Filename: {} upload_time: {}".format(filename, upload_time))
-    elif data.status_code == 200:
-        data = data.json()
-        value = data["value"]
-        upload_time = data["upload_time"]
-        filename = "image_local_"+key
 
-        write_img_local(filename, value)
-        cache_flag = True
-        print("Filename: {} upload_time: {}".format(filename, upload_time))
 
     return render_template("search.html", 
                            form = search_form, 

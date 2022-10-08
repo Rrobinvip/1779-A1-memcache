@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 import random
 from backend.helper import byteSize, mbytesize
 from backend.data import Data
@@ -10,6 +11,7 @@ class Memcache:
     itemNum = None
     itemSize = None
     requestNum = None
+    hit = None
     missRate = None
     hitRate = None
     configSize = None
@@ -22,6 +24,7 @@ class Memcache:
         self.itemNum = 0
         self.itemSize = 0.0
         self.requestNum = 0
+        self.hit = 0
         self.missRate = 0.0
         self.hitRate = 0.0
         
@@ -73,6 +76,36 @@ class Memcache:
                     return False
                 self.pairAdd(key, value, upload_time)
                 return True
+    
+    def get(self, key):
+        '''
+        This function will search a given key within the memcache. If hit, self.hit and self.requestNum will increase and 
+        value & upload_time associate with that key will be returned. If miss, nothing will be returned. 
+        '''
+        value = None
+        upload_time = None
+        if key in self.memcacheKeyValue:
+
+            value = self.memcacheKeyValue[key]
+            upload_time = self.memcacheKeyUploadTime[key]
+            self.memcacheKeyUsage[key]+=1
+
+            # Update status with hit/requestNum/hitRate/missRate
+            self.hit += 1
+            self.requestNum += 1
+
+            self.hitRate = self.hit/self.requestNum
+            self.missRate = 1-self.hitRate
+            return value, upload_time
+        else:
+            # Update status with hit/requestNum/hitRate/missRate
+            self.requestNum += 1
+
+            self.hitRate = self.hit/self.requestNum
+            self.missRate = 1-self.hitRate
+            return None, None
+
+            
 
     def invalidateKey(self, key):
         '''
