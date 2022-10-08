@@ -7,6 +7,7 @@
 from cmath import log
 from glob import escape
 from tkinter.messagebox import NO
+from urllib import response
 from flask import render_template, url_for, request, redirect
 from flask import json, flash, jsonify
 from frontend import app
@@ -35,9 +36,12 @@ from frontend.helper import write_img_local, image_encoder, current_datetime
 
 sql_connection = Data()
 
-#this function calls the backend statistics before the first request
 @app.before_first_request
 def start():
+    '''
+    This function calls the backend statistics before the first request. 
+    And it will also detect if frontend and backend is working properly. 
+    '''
     r = api_call("GET", "statistics")
     print("Response: ", r)
     if r.status_code == 200:
@@ -51,6 +55,7 @@ def main():
 #This function is front back call example
 @app.route('/test')
 def test():
+    # It's probably not working. 
     #call the backend url
     request = requests.get("http://127.0.0.1:5000/backend/test",timeout = 5)
     #parse the json file
@@ -63,6 +68,20 @@ def test():
     
 @app.route('/upload', methods=["GET", "POST"])
 def upload_picture():
+    '''
+    This function allows user to upload images. 
+    It will first save the image to local file system. Then it will encode the image with base64. After encoding, it 
+    will post reletive data to memcache for quick access. Image stores in different systems in following methods:
+    ### SQL:
+        * key
+        * filename
+        * upload_time
+
+    ### memcache:
+        * key
+        * base64 encoded value of image
+        * upload_time
+    '''
     picture_form = UploadForm()
 
     if request.method == "POST" and picture_form.validate_on_submit():
@@ -92,10 +111,14 @@ def upload_picture():
 def search_key():
     '''
     This function is used to search for the key entered by the user.
-    Workflow: The front end will first initiate a search with the back end, if the back end returns an error code 400, 
-    the front end will initiate a search to the database. If the backend returns code 200, the frontend will decode the 
+
+    Workflow: The frontend will first initiate a search with the back end, if the backend returns an error code 400, 
+    the frontend will initiate a search to the database. If the backend returns code 200, the frontend will decode the 
     backend image and store it in the local cache. No matter what the result is, if there is an image matching the user's 
-    search key, it will be displayed on the web page
+    search key, it will be displayed on the web page.
+
+    Image from SQL (filename) will be directly retrieved from `/static/uploads`, image from memcache will be decoded and stored in 
+    `/static/local_cache`. Image must be cached locally to be rendered in HTML. 
     '''
     search_form = SearchForm()
     filename = None
@@ -174,16 +197,24 @@ def search_key():
 
 @app.route("/allpairs")
 def all_pairs():
+    '''
+    Show all pairs. 
+    '''
     data = sql_connection.inspect_all_entries()
-    
     return render_template("all_pairs.html", items=data, tag2_selected=True)
 
 
 @app.route("/config", methods=["GET", "POST"])
 def memcache_config():
+    '''
+    This function basically has two parts. First for updating memcache size and replacement policy, another for clear the memcache. 
+
+    Two parts are triggered with different form. 
+    '''
     config_form = ConfigForm()
     clear_form = ClearForm()
 
+    # Give a default memcache size and replacement_policy, just in case database has nothing. 
     size = 100.0
     choice = 1
 
@@ -226,18 +257,14 @@ def memcache_config():
 
 @app.route("/status")
 def memcache_status():
-    # TODO 
-    # make API call to backend to accquire data of memcache status
-    # test_list = [[0,1,2,3,4]]
+    '''
+    Get all memcache status. 
 
-    r = requests.get("http://127.0.0.1:5001/backend/test",timeout = 5)
-    print("Response in test: ", r.json())
-    respose = r.json()
-    
-    test_list = [[1,2,3,4,5,6]]
-    # test_list[0] = respose[0][1:]
-    
-    print("TEST LIST : ", test_list)
+    If data is empty, a dummy data will be given.
+    '''
+    data = sql_connection.get_stat_data()
+    if data == None:
+        data = [[0,0,0,0,0,0]]
 
-    return render_template("status.html", items=test_list, tag4_selected=True)
+    return render_template("status.html", items=data, tag4_selected=True)
 
