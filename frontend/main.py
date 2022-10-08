@@ -12,6 +12,7 @@ from flask import json, flash, jsonify
 from frontend import app
 import requests
 import logging
+from datetime import datetime
 
 # Picture upload form
 from frontend.form import UploadForm, pictures
@@ -30,21 +31,17 @@ from frontend.form import ClearForm
 from frontend.helper import api_call
 
 # Encode and decode img
-from frontend.helper import write_img_local
+from frontend.helper import write_img_local, image_encoder, current_datetime
 
 sql_connection = Data()
-request_url = "http://127.0.0.1:5001/backend/"
 
 #this function calls the backend statistics before the first request
 @app.before_first_request
 def start():
-    url = request_url+"statistics"
-    r = api_call(url)
+    r = api_call("GET", "statistics")
     print("Response: ", r)
-    reponse_data = r.json()
-    print("Response code: ", reponse_data["statusCode"])
-    if reponse_data["statusCode"]==200:
-        print("Backend and frontend are working nicely.")
+    if r.status_code == 200:
+        print("Frontend and backend connection success.")
     pass
 
 @app.route('/')
@@ -71,6 +68,19 @@ def upload_picture():
     if request.method == "POST" and picture_form.validate_on_submit():
         filename = pictures.save(picture_form.pictures.data)
         key = picture_form.key.data
+
+        # Frontend will encode the image into a string, and pass it to backend as a value. 
+        value = image_encoder(filename)
+        upload_time = current_datetime()
+        parms = {"key":key, "value":value, "upload_time":upload_time}
+        result = api_call("POST", "put", parms)
+
+        if result.status_code == 200:
+            print(" - Frontend: backend stores image into memcache.")
+        else:
+            print(" - Frontend: memcache failed to store image for unknown reason. Image will still be stored locally. ")
+
+        # After update it with the memcache, frontend will add filename and key into db. 
         flash("Upload success")
         print(filename, key)
         sql_connection.add_entry(key, filename)
@@ -91,7 +101,6 @@ def search_key():
     filename = None
     upload_time = None
     key = None
-    url = request_url+"get"
     cache_flag = False
 
     print("* Search init...")
@@ -103,7 +112,7 @@ def search_key():
         key = search_form.key.data
 
     # Call backend
-    data = api_call(url, {"key":key})
+    data = api_call("GET", "get", {"key":key})
 
     # If the backend misses, look up the database. If the backend hits, decrypt the image and store it
     if data.status_code == 400:
@@ -146,24 +155,43 @@ def memcache_config():
     config_form = ConfigForm()
     clear_form = ClearForm()
 
-    if request.method == "GET" and "size" in request.args and "policy" in request.args:
-        # TODO
-        # make API call to backend to config memcache
-        flash("Update success")
-        print("swws")
+    size = 100.0
+    choice = 1
 
-    if request.method == "POST" and config_form.validate_on_submit():
+    if request.method == "GET" and "size" in request.args and "policy" in request.args:
+        size = escape(request.args.get("size"))
+        choice = escape(request.args.get("choice", type=int))
+        parms = {"size":size, "replacement_policy":choice}
+        result = api_call("GET", "config", parms)
+
+        if result.status_code == 200:
+            flash("Update success")
+        else: 
+            flash("Update failed")
+        return redirect(url_for("memcache_config"))
+
+
+    elif request.method == "POST" and config_form.validate_on_submit():
         size = config_form.size.data
         choice = config_form.replacement_policy.data
 
-        # TODO 
-        # make API call to backend to config memcache
-        flash("Update success")
-        print("++++++++ size and choice: ",size, choice)
+        parms = {"size":size, "replacement_policy":choice}
+        result = api_call("GET", "config", parms)
+
+        if result.status_code == 200:
+            flash("Update success")
+        else: 
+            flash("Update failed")
+        return redirect(url_for("memcache_config"))
 
     if request.method == "POST" and clear_form.validate_on_submit():
-        # TODO make API call to backend to clear memcache
-        flash("Memcache cleared.")
+        result = api_call("GET", "clear")
+
+        if result.status_code == 200:
+            flash("memcache cleared")
+        else: 
+            flash("Update failed")
+        return redirect(url_for("memcache_config"))
         
     return render_template("config.html", form1=config_form, form2=clear_form, tag3_selected=True)
 
@@ -177,8 +205,8 @@ def memcache_status():
     print("Response in test: ", r.json())
     respose = r.json()
     
-    test_list = [[]]
-    test_list[0] = respose[0][1:]
+    test_list = [[1,2,3,4,5,6]]
+    # test_list[0] = respose[0][1:]
     
     print("TEST LIST : ", test_list)
 

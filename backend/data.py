@@ -44,7 +44,7 @@ class Data:
                 )
                 """
         self.cursor.execute(query)
-        print("Config Query Executed")
+        print(" - Backend.data.get_config_data: Config Query Executed")
         data = self.cursor.fetchall()
         return data
     
