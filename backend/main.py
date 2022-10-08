@@ -127,6 +127,7 @@ def config():
     if "size" in request.args and "replacement_policy" in request.args:
         size = escape(request.args.get("size"))
         replacementPolicy = escape(request.args.get("replacement_policy"))
+        memcache.refreshConfiguration(size, replacementPolicy)
 
     sql_connection.insert_config_data(size, replacementPolicy)
     return jsonify({"Message":"Success update config"}), 200
