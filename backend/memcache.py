@@ -1,4 +1,5 @@
 from distutils.command.upload import upload
+from operator import truediv
 import random
 from backend.helper import byteSize, mbytesize
 from backend.data import Data
@@ -60,6 +61,11 @@ class Memcache:
                 self.pairAdd(key, value, upload_time)
                 return True
             else:
+                if self.itemNum != 0:
+                    notEmpty = True
+                else:
+                    notEmpty = False
+
                 while _exceed and notEmpty:
                     if self.replacementPolicy == 1:
                         result =  self.removeLeastRecentUse()
@@ -114,6 +120,39 @@ class Memcache:
         if key in self.memcacheKeyValue:
             self.pairDelete(key)
         
+    def refreshConfiguration(self, size, replacement_policy):
+        '''
+        This function will reset memcache config. After reset config, if current item size is larger than config size, memcache
+        will keep removing items based on replacement policy until some conditions are meet. 
+        '''
+        self.configSize = float(size)
+        self.replacementPolicy = replacement_policy
+
+        _exceed, size = self.checkSize()
+        print(" - Backend.memcache.put v:_exceed: ", _exceed)
+        if _exceed == False:
+            return True
+        else:
+            if self.itemNum != 0:
+                notEmpty = True
+            else:
+                notEmpty = False
+                
+            while _exceed and notEmpty:
+                if self.replacementPolicy == 1:
+                    result =  self.removeLeastRecentUse()
+                    if result == None:
+                        notEmpty = False
+                else:
+                    result = self.randomRemove()
+                    if result == None:
+                        notEmpty = False                        
+                _exceed, size = self.checkSize()
+            if not notEmpty and _exceed:
+                print("Very rare situation happened. It's empty but size is already too large to put any pairs.")
+                print("Consider add more default size. ")
+                return False
+            return True
         
     def checkSize(self):
         '''
