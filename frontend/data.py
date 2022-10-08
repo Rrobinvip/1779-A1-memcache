@@ -26,7 +26,7 @@ class Data:
                 print("Database does not exist")
             else:
                 print(err)
-        print("DB connection success.")
+        print(" - Frontend DB connection success.")
 
         self.cursor = self.cnx.cursor()
 

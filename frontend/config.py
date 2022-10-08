@@ -1,8 +1,8 @@
 import os
-from tkinter import TOP
 
 TEMPLATE_DIR = os.path.abspath("./frontend/templates")
 STATIC_DIR = os.path.abspath("./frontend/static")
+LOCAL_CACHE_DIR = os.path.abspath("./frontend/static/local_cache")
 
 class Config(object):
     SECRET_KEY = "teeesssttt"
