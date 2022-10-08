@@ -36,11 +36,14 @@ class helper:
     #It will return the removed value, the the value is none, then the remove
     #action fails
     def removeLeastRecentUse(self,memcache,usage):
+        #find least recent use datetime
         minValue = min(usage.values())
-        key = usage.get(minValue)
-        removed_value = None
-        if key is not None:
-            memcache.pop(key,None)
+        #find key value with minValue
+        key_list = list(usage.keys())
+        value_list = list(usage.values())
+        position = value_list.index(minValue)
+        key = key_list(position)
+        removed_value = memcache.pop(key,None)
         return removed_value
     
     #This function helps remove key and value from the memcache
