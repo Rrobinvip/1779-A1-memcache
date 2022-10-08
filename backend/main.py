@@ -15,7 +15,6 @@ sql_connection = Data()
 from backend.stats import Stats
 stats_update = Stats()
 
-from backend.helper import create_json_response
 
 
 @app.route('/')
