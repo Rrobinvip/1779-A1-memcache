@@ -111,7 +111,15 @@ class Memcache:
             self.missRate = 1-self.hitRate
             return None, None
 
-            
+    def clear(self):
+        '''
+        This function will remove all keys and pairs from memcache.
+        '''
+        self.memcacheKeyValue.clear()
+        self.memcacheKeyUploadTime.clear()
+        self.memcacheKeyUsage.clear()
+        self.itemNum = 0
+        self.itemSize = 0.0
 
     def invalidateKey(self, key):
         '''
@@ -191,15 +199,6 @@ class Memcache:
             self.pairDelete(key)
         return key
     
-    def clear(self):
-        '''
-        This function will remove all keys and pairs from memcache.
-        '''
-        self.memcacheKeyValue.clear()
-        self.memcacheKeyUploadTime.clear()
-        self.memcacheKeyUsage.clear()
-        self.itemNum = 0
-        self.itemSize = 0.0
 
     def getStatus(self):
         '''
