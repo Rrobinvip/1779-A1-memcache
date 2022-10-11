@@ -5,8 +5,10 @@
 # from traceback import clear_frames
 
 from cmath import log
+from crypt import methods
 from glob import escape
 from tkinter.messagebox import NO
+from unittest import result
 from urllib import response
 from flask import render_template, url_for, request, redirect
 from flask import json, flash, jsonify
@@ -268,3 +270,17 @@ def memcache_status():
 
     return render_template("status.html", items=data, tag4_selected=True)
 
+
+@app.route("/full_reset", methods=["GET"])
+def full_reset():
+    '''
+    This is a hidden entry and it will show on the nav or anywhere else.
+    When accessing this page, it will request a password in GET. If the password is correct, it will drop everything 
+    inside the DB. It's a full clean reset. 
+    '''
+    if request.method == "GET" and "pk" in request.args:
+        pk = str(request.args.get("pk"))
+        if pk == "ps1003":
+            sql_connection.full_reset()
+            result = api_call("GET", "full_reset", {"pk":pk})
+    return redirect(url_for("upload_picture"))

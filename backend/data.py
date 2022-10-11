@@ -43,6 +43,7 @@ class Data:
                     SELECT MAX(id) From configuration
                 )
                 """
+        self.cnx.commit()
         self.cursor.execute(query)
         print(" - Backend.data.get_config_data: Config Query Executed")
         data = self.cursor.fetchall()
@@ -70,6 +71,7 @@ class Data:
                 ORDER BY `id` DESC
                 LIMIT 120;
                 """
+        self.cnx.commit()
         self.cursor.execute(query)
         print("Statistics Query Executed")
         data = self.cursor.fetchall()

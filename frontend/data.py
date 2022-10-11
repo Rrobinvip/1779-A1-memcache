@@ -28,19 +28,34 @@ class Data:
                 print(err)
         print(" - Frontend DB connection success.")
 
-        self.cursor = self.cnx.cursor()
+        self.cursor = self.cnx.cursor(buffered=True)
 
     def add_entry(self, key, filename):
         '''
-        Inserts an entry into DB. This function will generate a datetime. 
+        Inserts an entry into DB. This function will generate a datetime. If the entry is already exist, it will be replaced by new one.
         '''
         now = datetime.now()
         fixed_now = now.strftime('%Y-%m-%d %H:%M:%S')
 
         query = """
-                INSERT INTO `pairs` (`key`,`filename`,`upload_time`)
-                VALUES ("{}", "{}", "{}");
-                """.format(key, filename, fixed_now)
+                SELECT * FROM `pairs` where `key`='{}';
+                """.format(key)
+        self.cursor.execute(query)
+        self.cnx.commit()
+        data = self.cursor.fetchall()
+        print(" - Frondend.data.add_entry: v:data", data)
+
+        if len(data) != 0:
+            query = """
+                    UPDATE `pairs`
+                    SET `filename`='{}', `upload_time`='{}'
+                    WHERE `key`='{}';
+                    """.format(filename, fixed_now, key)
+        else:
+            query = """
+                    INSERT INTO `pairs` (`key`,`filename`,`upload_time`)
+                    VALUES ("{}", "{}", "{}");
+                    """.format(key, filename, fixed_now)
 
         print(query)
 
@@ -54,7 +69,9 @@ class Data:
         query = """
                 SELECT * FROM `pairs`;
                 """
+
         self.cursor.execute(query)
+        self.cnx.commit()
         data = self.cursor.fetchall()
 
         # print(data)
@@ -68,7 +85,9 @@ class Data:
                 SELECT * FROM `pairs` WHERE `key`="{}";
                 """.format(key)
 
+        
         self.cursor.execute(query)
+        self.cnx.commit()
         data = self.cursor.fetchall()
 
         print("searched data :", data)
@@ -87,8 +106,22 @@ class Data:
                 ORDER BY `id` DESC
                 LIMIT 120;
                 """
+        self.cnx.commit()
         self.cursor.execute(query)
         print("Statistics Query Executed")
         data = self.cursor.fetchall()
         # print("Statistics data at backend: ", data)
         return data
+
+    def full_reset(self):
+        '''
+        Remove everything from memcache and DB. It's a complete reset. 
+        '''
+        query = """
+                DELETE FROM `configuration`;
+                DELETE FROM `pairs`;
+                DELETE FROM `statistics`;
+                """
+        self.cursor.execute(query)
+        self.cnx.commit()
+
