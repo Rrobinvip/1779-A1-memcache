@@ -191,7 +191,7 @@ class Memcache:
             self.pairDelete(key)
         return key
     
-    def resetMemcache(self):
+    def clear(self):
         '''
         This function will remove all keys and pairs from memcache.
         '''
