@@ -1,4 +1,4 @@
-name: MEMCACHE_r1
+name: MEMCACHE
 channels:
   - defaults
 dependencies:
