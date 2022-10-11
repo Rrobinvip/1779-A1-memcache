@@ -25,6 +25,7 @@ def write_img_local(filename, decode_value):
     '''
     final_path = os.path.join(LOCAL_CACHE_DIR, filename)
     image_decode = base64.b64decode(decode_value)
+    print(" - Frontend.helper.write_img_local v:final_path ", final_path)
     file = open(final_path, "wb")
     file.write(image_decode)
     file.close
