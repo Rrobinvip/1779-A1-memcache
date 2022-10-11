@@ -34,6 +34,7 @@ if find_in_conda_env ".*MEMCACHE.*" ; then
 else 
     echo "Conda env doesn't exist."
     echo "Import conda env through -conda env create -f environment.yml-"
+    exit
 fi
 
 echo "You are good to go. Activate conda env and run instances through -python3 run.py-"
