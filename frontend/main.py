@@ -150,7 +150,11 @@ def search_key():
             data = data.json()
             value = data["value"]
             upload_time = data["upload_time"]
-            filename = "image_local_"+key+current_datetime()+".png"
+
+            # Add datetime prefix to image cache file.
+            date_prefix = current_datetime()
+            print(" - Frontend.main.search_key v:data_prefix ",date_prefix)
+            filename = "image_local_"+key+"_"+date_prefix+".png"
 
             write_img_local(filename, value)
             cache_flag = True
@@ -180,7 +184,13 @@ def search_key():
             data = data.json()
             value = data["value"]
             upload_time = data["upload_time"]
-            filename = "image_local_"+key+".png"
+
+            # Add datetime prefix to image cache file.
+            date_prefix = current_datetime()
+            print(" - Frontend.main.search_key v:data_prefix ",date_prefix)
+            filename = "image_local_"+key+"_"+date_prefix+".png"
+
+            # filename = "image_local_"+key+".png"
 
             write_img_local(filename, value)
             cache_flag = True
