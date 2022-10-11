@@ -1,4 +1,4 @@
-name: MEMCACHE_r1
+name: MEMCACHE
 channels:
   - defaults
 dependencies:
@@ -39,4 +39,3 @@ dependencies:
     - urllib3==1.26.12
     - werkzeug==2.2.2
     - wtforms==3.0.1
-prefix: /Users/haoyushi/opt/anaconda3/envs/MEMCACHE
