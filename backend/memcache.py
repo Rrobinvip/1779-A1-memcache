@@ -1,5 +1,4 @@
 from distutils.command.upload import upload
-from operator import truediv
 import random
 from backend.helper import byteSize, mbytesize
 from backend.data import Data
