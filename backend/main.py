@@ -1,7 +1,7 @@
 from crypt import methods
 from os import stat
 from flask import render_template, url_for, request,jsonify
-from backend import app, memcache,usage,itemNum,itemSize,requestNum,missRate,hitRate
+from backend import app
 from flask import json
 import threading
 from glob import escape
@@ -44,18 +44,10 @@ def stats():
     When first request initilized from browser, frondend will call this api to active a thread to 
     record status. 
     '''
-    print(" * This is running")
-    print(" * Call made")
-    # status = memcache.getStatus()
-    # thread = threading.Thread(target = stats_update.stats_update, args = (status[0],
-    #                                                                       status[1],
-    #                                                                       status[2],
-    #                                                                       status[3],
-    #                                                                       status[4]))
-    # Threading shares variables. Passing memcache allows it to lively obtain data from it. 
+    print(" * Backend is running.")
     thread = threading.Thread(target = stats_update.stats_update_t2, args = (memcache, ))
     thread.start()
-    print(" * Starts")
+    print(" * Starts threading.")
     return jsonify({"Messsge":"True, threading starts"}), 200
     
     

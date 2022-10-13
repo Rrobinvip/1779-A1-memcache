@@ -43,7 +43,7 @@ class Data:
         self.cursor.execute(query)
         self.cnx.commit()
         data = self.cursor.fetchall()
-        print(" - Frondend.data.add_entry: v:data", data)
+        print(" - Frondend.data.add_entry: data will be empty if no duplication. v:data", data)
 
         if len(data) != 0:
             query = """
@@ -57,7 +57,7 @@ class Data:
                     VALUES ("{}", "{}", "{}");
                     """.format(key, filename, fixed_now)
 
-        print(query)
+        print(" - Frontend.data.add_entry: query => \n",query)
 
         self.cursor.execute(query)
         self.cnx.commit()
@@ -122,6 +122,6 @@ class Data:
                 DELETE FROM `pairs`;
                 DELETE FROM `statistics`;
                 """
-        self.cursor.execute(query)
+        self.cursor.execute(query, multi=True)
         self.cnx.commit()
 
