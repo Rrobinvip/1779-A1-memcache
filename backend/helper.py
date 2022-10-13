@@ -1,6 +1,6 @@
 import sys
 
-def byteSize(memcache):
+def byteSize(memcache:dict):
     '''
     This function return the size of the memcache.
     '''
@@ -16,7 +16,7 @@ def byteSize(memcache):
     return size
 
 def mbytesize(memcache):
-    return byteSize(memcache)/1000000
+    return byteSize(memcache)/(1024*1024)
 
 def checkSize(memcache,config_size):
     '''

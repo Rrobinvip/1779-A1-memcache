@@ -9,7 +9,7 @@ def api_call(type, commend, params=None):
     This function is used to use the api. \n
     The flag will need to be updated in the future to accommodate different api's.
     '''
-    request_url = "http://127.0.0.1:5001/backend/"
+    request_url = "http://127.0.0.1:5000/backend/"
     url = request_url+commend
     print(" - Frontend.helper.api_call: ", url)
     if type == "GET":

@@ -43,7 +43,7 @@ def start():
     r = api_call("GET", "statistics")
     print("Response: ", r)
     if r.status_code == 200:
-        print("Frontend and backend connection success.")
+        print(" * Frontend and backend connection success.")
     pass
 
 @app.route('/')
@@ -156,7 +156,7 @@ def search_key():
 
             write_img_local(filename, value)
             cache_flag = True
-            print("Filename: {} upload_time: {}".format(filename, upload_time))
+            print(" - Frontend.main.search_key: v:Filename: {} v:upload_time: {}".format(filename, upload_time))
     elif request.method == "POST" and search_form.validate_on_submit():
         key = search_form.key.data
 
@@ -192,7 +192,7 @@ def search_key():
 
             write_img_local(filename, value)
             cache_flag = True
-            print("Filename: {} upload_time: {}".format(filename, upload_time))
+            print(" - Frontend.main.search_key: v:Filename: {} v:upload_time: {}".format(filename, upload_time))
 
 
     return render_template("search.html", 

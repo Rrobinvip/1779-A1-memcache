@@ -45,7 +45,7 @@ class Data:
                 """
         self.cnx.commit()
         self.cursor.execute(query)
-        print(" - Backend.data.get_config_data: Config Query Executed")
+        print(" - Backend.data.get_config_data: Config Query Executed.")
         data = self.cursor.fetchall()
         return data
     

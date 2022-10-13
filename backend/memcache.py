@@ -32,9 +32,11 @@ class Memcache:
         try:
             self.configSize = specs[0][1]
             self.replacementPolicy = specs[0][2]
+            print(" - Backend.memcahe: Config retrieved from DB.")
         except IndexError:
             self.configSize = 100.0      # Give 100MB initial size as default
             self.replacementPolicy = 1
+            print(" - Backend.memcache: DB doesn't hold any condig, give default values. ")
 
         print(" - Backend.memcache.__init__ : Init complete, status =>")
         print(" \t configsize: ", self.configSize)
