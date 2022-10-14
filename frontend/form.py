@@ -1,3 +1,4 @@
+from re import L
 from flask_uploads import UploadSet, IMAGES, configure_uploads
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed, DataRequired
@@ -30,6 +31,20 @@ class UploadForm(FlaskForm):
     )
     submit = SubmitField("Upload")
 
+class UploadForm_api(FlaskForm):
+    key = StringField(
+        "Key",
+        validators=[ 
+            DataRequired()
+        ]
+    )
+    file = FileField(
+        "Picture",
+        validators=[
+            FileAllowed(pictures, "Only pictures are allowed"),
+            FileRequired("File should not be empty")
+        ]
+    )
 class SearchForm(FlaskForm):
     key = StringField(
         "Key",

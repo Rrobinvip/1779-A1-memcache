@@ -32,6 +32,9 @@ from frontend.helper import api_call, api_image_store
 # Encode and decode img
 from frontend.helper import write_img_local, image_encoder, current_datetime,api_key_content,api_image_store
 
+# Form for Upload api call
+from frontend.form import UploadForm_api
+
 sql_connection = Data()
 
 @app.before_first_request
@@ -144,6 +147,17 @@ def search_key():
                 filename = data[0][2]
                 upload_time = data[0][3]
                 print("Filename: {} upload_time: {}".format(filename, upload_time))
+
+                # When data is retrieved from DB, add it to memcache.
+                value = image_encoder(filename)
+                parms = {"key":key, "value":value, "upload_time":upload_time}
+                result = api_call("POST", "put", parms)
+
+                if result.status_code == 200:
+                    print(" - Frontend: backend stores image into memcache.")
+                else:
+                    print(" - Frontend: memcache failed to store image for some reason. Check message from 'backend.memcache.*' for more help. Image will still be stored locally. ")
+
         elif data.status_code == 200:
             data = data.json()
             value = data["value"]
@@ -178,6 +192,17 @@ def search_key():
                 filename = data[0][2]
                 upload_time = data[0][3]
                 print("Filename: {} upload_time: {}".format(filename, upload_time))
+
+                # When data is retrieved from DB, add it to memcache.
+                value = image_encoder(filename)
+                parms = {"key":key, "value":value, "upload_time":upload_time}
+                result = api_call("POST", "put", parms)
+
+                if result.status_code == 200:
+                    print(" - Frontend: backend stores image into memcache.")
+                else:
+                    print(" - Frontend: memcache failed to store image for some reason. Check message from 'backend.memcache.*' for more help. Image will still be stored locally. ")
+
         elif data.status_code == 200:
             data = data.json()
             value = data["value"]
@@ -276,21 +301,6 @@ def memcache_status():
 
     return render_template("status.html", items=data, tag4_selected=True)
 
-
-@app.route("/full_reset", methods=["GET"])
-def full_reset():
-    '''
-    This is a hidden entry and it will show on the nav or anywhere else.
-    When accessing this page, it will request a password in GET. If the password is correct, it will drop everything 
-    inside the DB. It's a full clean reset. 
-    '''
-    if request.method == "GET" and "pk" in request.args:
-        pk = str(request.args.get("pk"))
-        if pk == "ps1003":
-            sql_connection.full_reset()
-            result = api_call("GET", "full_reset", {"pk":pk})
-    return redirect(url_for("upload_picture"))
-
 @app.route("/api/list_keys", methods= ['POST'])
 def api_list_keys():
     '''
@@ -310,6 +320,7 @@ def api_list_keys():
 @app.route("/api/key/<key_value>", methods = ['POST'])
 def api_key_search(key_value):
     #call backend
+    print(" - Frontend.api_key_search: v:key_value", key_value)
     data = api_call("GET","get",{"key":key_value})
 
     #If the backend misses, look up the database
@@ -348,6 +359,7 @@ def api_key_search(key_value):
                 "message":"Unkown Error"
             }
         })
+
 @app.route("/api/upload",methods = ['POST'])
 def api_upload():
     key = request.form.get('key')
@@ -380,3 +392,35 @@ def api_upload():
     return jsonify({
         "success":"true"
     })
+
+# @app.route("/api/upload",methods = ['POST'])
+# def api_upload():
+#     picture_form = UploadForm_api(data_obj)
+#     print(picture_form.validate())
+#     print(picture_form.key.data)
+#     print(picture_form.errors)
+    
+#     if request.method == 'POST' and picture_form.validate():
+#         filename = pictures.save(picture_form.file.data)
+#         key = picture_form.key.data
+
+#         # Frontend will encode the image into a string, and pass it to backend as a value. 
+#         value = image_encoder(filename)
+#         upload_time = current_datetime()
+#         parms = {"key":key, "value":value, "upload_time":upload_time}
+#         result = api_call("POST", "put", parms)
+
+#         if result.status_code == 200:
+#             print(" - Frontend: backend stores image into memcache.")
+#         else:
+#             print(" - Frontend: memcache failed to store image for some reason. Check message from 'backend.memcache.*' for more help. Image will still be stored locally. ")
+
+#         # After update it with the memcache, frontend will add filename and key into db. 
+#         sql_connection.add_entry(key, filename)
+#         return jsonify({
+#             "success":"true"
+#         })
+#     return jsonify({
+#         "success":"false",
+#         "message":"File type or filename incorrect"
+#     })

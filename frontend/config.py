@@ -8,6 +8,7 @@ LOCAL_UPLOADS_DIR = os.path.abspath("./frontend/static/uploads")
 class Config(object):
     SECRET_KEY = "teeesssttt"
     UPLOADED_PHOTOS_DEST = "./frontend/static/uploads"
+    UPLOADED_FILE_DEST = "./frontend/static/uploads"
     DB_CONFIG = {
         "user":"test_1",
         "password":"19970808",

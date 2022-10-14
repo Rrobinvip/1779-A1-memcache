@@ -130,8 +130,9 @@ class Data:
         This function will returen all keys in pair table
         '''
         query = """
-        SELECT `key` FROM pairs
-        """
+                SELECT `key` FROM pairs;
+                """
+        self.cnx.commit()
         self.cursor.execute(query)
         data = self.cursor.fetchall()
         return data

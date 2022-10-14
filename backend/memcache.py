@@ -11,6 +11,7 @@ class Memcache:
     itemSize = None
     requestNum = None
     hit = None
+    miss = None
     missRate = None
     hitRate = None
     configSize = None
@@ -24,6 +25,7 @@ class Memcache:
         self.itemSize = 0.0
         self.requestNum = 0
         self.hit = 0
+        self.miss = 0
         self.missRate = 0.0
         self.hitRate = 0.0
         
@@ -46,13 +48,20 @@ class Memcache:
     def put(self, key, value, upload_time):
         '''
         This funciton will put a pair into memcache. 
-        First, it will inspect if memcache is full (when self.itemSize is greater than self.configSize)
+        First, it will inspect if memcache is full (when self.itemSize+putSzie (size of new pair) is greater than self.configSize)
         Otherwise, it will start to remove pairs based on user selected replacement policy. 
         '''
+
+        # invalidate the key, it will be dropped if it exists.
+        self.invalidateKey(key)
+
         print(" - Backend.memcache: f:put, v:configSize:", self.configSize)
+        
         putSize = mbytesize_obj(value)
         putSize += mbytesize_obj(key)
         putSize += mbytesize_obj(upload_time)
+
+        self.requestNum += 1
         
         if self.spaceSwap(putSize):
             self.pairAdd(key, value, upload_time)
@@ -90,6 +99,7 @@ class Memcache:
         '''
         value = None
         upload_time = None
+        self.requestNum += 1
         if key in self.memcacheKeyValue:
 
             value = self.memcacheKeyValue[key]
@@ -98,23 +108,17 @@ class Memcache:
 
             # Update status with hit/requestNum/hitRate/missRate
             self.hit += 1
-            self.requestNum += 1
-
-            self.hitRate = self.hit/self.requestNum
-            self.missRate = 1-self.hitRate
             return value, upload_time
         else:
             # Update status with hit/requestNum/hitRate/missRate
-            self.requestNum += 1
-
-            self.hitRate = self.hit/self.requestNum
-            self.missRate = 1-self.hitRate
+            self.miss += 1
             return None, None
 
     def clear(self):
         '''
         This function will remove all keys and pairs from memcache.
         '''
+        self.requestNum += 1
         self.memcacheKeyValue.clear()
         self.memcacheKeyUploadTime.clear()
         self.memcacheKeyUsage.clear()
@@ -125,6 +129,7 @@ class Memcache:
         '''
         To drop a specific key. 
         '''
+        self.requestNum += 1
         if key in self.memcacheKeyValue:
             self.pairDelete(key)
         
@@ -133,6 +138,8 @@ class Memcache:
         This function will reset memcache config. After reset config, if current item size is larger than config size, memcache
         will keep removing items based on replacement policy until some conditions are meet. 
         '''
+        self.requestNum += 1
+
         self.configSize = float(size)
         self.replacementPolicy = replacement_policy
 
@@ -204,6 +211,9 @@ class Memcache:
         '''
         This function will return multiple items in a list required by `backend.stats.stats_update()`.
         '''
+        if self.miss != 0 or self.hit != 0:
+            self.missRate = self.miss/(self.hit + self.miss)
+            self.hitRate = self.hit/(self.hit + self.miss)
         return [self.itemNum, self.itemSize, self.requestNum, self.missRate, self.hitRate]
 
     def pairDelete(self, key):
