@@ -27,13 +27,11 @@ from frontend.form import ConfigForm
 from frontend.form import ClearForm
 
 # Helper
-from frontend.helper import api_call, api_image_store
+from frontend.helper import api_call, api_image_store, allowed_file
 
 # Encode and decode img
 from frontend.helper import write_img_local, image_encoder, current_datetime,api_key_content,api_image_store
 
-# Form for Upload api call
-from frontend.form import UploadForm_api
 
 sql_connection = Data()
 
@@ -374,53 +372,47 @@ def api_upload():
                 "message":"No file given"
             }
         })
+    
+    if file and allowed_file(filename):
     #if we have the file then store the file to local
-    api_image_store(file,filename)
-    
-    #front will encode the image and pass it to backend
-    value = image_encoder(filename)
-    upload_time = current_datetime()
-    parms = {"key":key,"value":value,"upload_time":upload_time}
-    result = api_call("POST","put",parms)
+        api_image_store(file,filename)
+        
+        #front will encode the image and pass it to backend
+        value = image_encoder(filename)
+        upload_time = current_datetime()
+        parms = {"key":key,"value":value,"upload_time":upload_time}
+        result = api_call("POST","put",parms)
 
-    if result.status_code == 200:
-        print("Memcache image stored")
+        if result.status_code == 200:
+            print("Memcache image stored")
+        else:
+            print("Memcache error")
+        
+        sql_connection.add_entry(key,filename)
+        return jsonify({
+            "success":"true"
+        })
     else:
-        print("Memcache error")
-    
-    sql_connection.add_entry(key,filename)
-    return jsonify({
-        "success":"true"
-    })
-
-# @app.route("/api/upload",methods = ['POST'])
-# def api_upload():
-#     picture_form = UploadForm_api(data_obj)
-#     print(picture_form.validate())
-#     print(picture_form.key.data)
-#     print(picture_form.errors)
-    
-#     if request.method == 'POST' and picture_form.validate():
-#         filename = pictures.save(picture_form.file.data)
-#         key = picture_form.key.data
-
-#         # Frontend will encode the image into a string, and pass it to backend as a value. 
-#         value = image_encoder(filename)
-#         upload_time = current_datetime()
-#         parms = {"key":key, "value":value, "upload_time":upload_time}
-#         result = api_call("POST", "put", parms)
-
-#         if result.status_code == 200:
-#             print(" - Frontend: backend stores image into memcache.")
-#         else:
-#             print(" - Frontend: memcache failed to store image for some reason. Check message from 'backend.memcache.*' for more help. Image will still be stored locally. ")
-
-#         # After update it with the memcache, frontend will add filename and key into db. 
-#         sql_connection.add_entry(key, filename)
-#         return jsonify({
-#             "success":"true"
-#         })
-#     return jsonify({
-#         "success":"false",
-#         "message":"File type or filename incorrect"
-#     })
+        if not file:
+            return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"No file given"
+                }
+            })
+        if not allowed_file(filename):
+            return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"File type not allowed"
+                }
+            })
+        return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"Unknown error"
+                }
+        })
