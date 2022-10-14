@@ -130,11 +130,3 @@ def status():
     data = sql_connection.get_stat_data()
     return data, 200
 
-@app.route('/full_reset', methods=['GET'])
-def full_reset():
-    if request.method == "GET" and "pk" in request.args:
-        pk = str(request.args.get("pk"))
-        if pk == "ps1003":
-            memcache.clear()
-            return jsonify({"Message":"memcache reset"}), 200
-    return jsonify({"Message":"Invalid access"}), 400
