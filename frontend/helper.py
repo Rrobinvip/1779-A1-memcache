@@ -1,5 +1,5 @@
 import requests
-from frontend.config import LOCAL_CACHE_DIR, LOCAL_UPLOADS_DIR
+from frontend.config import LOCAL_CACHE_DIR, LOCAL_UPLOADS_DIR, ALLOWED_EXTENSIONS
 import os
 import base64
 from datetime import datetime
@@ -70,3 +70,7 @@ def api_image_store(file,filename):
     '''
     final_path = os.path.join(LOCAL_UPLOADS_DIR,filename)
     file.save(final_path)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
