@@ -124,4 +124,15 @@ class Data:
                 """
         self.cursor.execute(query, multi=True)
         self.cnx.commit()
+    
+    def get_keys(self):
+        '''
+        This function will returen all keys in pair table
+        '''
+        query = """
+        SELECT `key` FROM pairs
+        """
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        return data
 
