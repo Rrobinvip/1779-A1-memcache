@@ -31,7 +31,8 @@ def checkSize(memcache,config_size):
         result = True
         return result
 
-
+def mbytesize_obj(obj):
+    return sys.getsizeof(obj)/(1024*1024)
 
 
     

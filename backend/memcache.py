@@ -1,6 +1,5 @@
-from distutils.command.upload import upload
 import random
-from backend.helper import byteSize, mbytesize
+from backend.helper import mbytesize, mbytesize_obj
 from backend.data import Data
 sql_connection = Data()
 
@@ -51,38 +50,38 @@ class Memcache:
         Otherwise, it will start to remove pairs based on user selected replacement policy. 
         '''
         print(" - Backend.memcache: f:put, v:configSize:", self.configSize)
-        if key in self.memcacheKeyValue:
-            self.pairDelete(key)
+        putSize = mbytesize_obj(value)
+        putSize += mbytesize_obj(key)
+        putSize += mbytesize_obj(upload_time)
+        
+        if self.spaceSwap(putSize):
             self.pairAdd(key, value, upload_time)
+            print(" - Backend.memcache.put : a new key stored.")
             return True
         else:
-            _exceed, size = self.checkSize()
-            print(" - Backend.memcache.put v:_exceed: ", _exceed)
-            if _exceed == False:
-                self.pairAdd(key, value, upload_time)
-                return True
-            else:
-                if self.itemNum != 0:
-                    notEmpty = True
-                else:
-                    notEmpty = False
+            print(" - Backend.memcache.put : memcache cannot hold this pair.")
+            return False
 
-                while _exceed and notEmpty:
-                    if self.replacementPolicy == 1:
-                        result =  self.removeLeastRecentUse()
-                        if result == None:
-                            notEmpty = False
-                    else:
-                        result = self.randomRemove()
-                        if result == None:
-                            notEmpty = False                        
-                    _exceed, size = self.checkSize()
-                if not notEmpty and _exceed:
-                    print("Very rare situation happened. It's empty but size is already too large to put any pairs.")
-                    print("Consider add more default size. ")
-                    return False
-                self.pairAdd(key, value, upload_time)
-                return True
+    def spaceSwap(self, putSize):
+        '''
+        This function tests if a new pair can be put into the memcache. 
+
+        - If there are many pairs already in the memcache, this function will start to delete pairs based on users config. Stop when no pairs or enough space.
+        - If there has no pairs in memcache, put putSize is still larger than the config size, it will return false and lead to a failure on put. 
+        '''
+        _exceed_put = (putSize + self.itemSize) > self.configSize
+        while _exceed_put and self.itemNum != 0:
+            if self.replacementPolicy == 1:
+                self.removeLeastRecentUse()
+            else:
+                self.randomRemove()
+            _exceed_put = (putSize + self.itemSize) > self.configSize
+        if _exceed_put and self.itemNum == 0:
+            print(" - Backend.memcache.spaceSwap : No items, but new file is too large. Increase memcache config size. This file will not be stored in memcache")
+            return False
+        else:
+            return True
+
     
     def get(self, key):
         '''
