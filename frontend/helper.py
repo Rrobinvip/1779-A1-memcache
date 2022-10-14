@@ -47,3 +47,26 @@ def current_datetime():
     now = datetime.now()
     fixed_now = now.strftime('%Y-%m-%d %H:%M:%S')
     return fixed_now
+
+def api_key_content(filename,decode_value):
+    '''
+    This function is intented for the api key test function.
+    If the decode_value is not None, then it will return the decode value.
+    If the decode is None, it will read the image file from the upload dir and encoded it to 64base
+    '''
+    value = None
+    if decode_value is not None:
+        value = decode_value.decode()
+    else:
+        final_path = os.path.join(LOCAL_UPLOADS_DIR,filename)
+        file = open(final_path,'rb')
+        encode_string = base64.b64encode(file.read())
+        value = encode_string.decode()
+    return value
+
+def api_image_store(file,filename):
+    '''
+    This function will save the image file from test api to local upload folder
+    '''
+    final_path = os.path.join(LOCAL_UPLOADS_DIR,filename)
+    file.save(final_path)

@@ -27,10 +27,10 @@ from frontend.form import ConfigForm
 from frontend.form import ClearForm
 
 # Helper
-from frontend.helper import api_call
+from frontend.helper import api_call, api_image_store
 
 # Encode and decode img
-from frontend.helper import write_img_local, image_encoder, current_datetime
+from frontend.helper import write_img_local, image_encoder, current_datetime,api_key_content,api_image_store
 
 sql_connection = Data()
 
@@ -290,3 +290,93 @@ def full_reset():
             sql_connection.full_reset()
             result = api_call("GET", "full_reset", {"pk":pk})
     return redirect(url_for("upload_picture"))
+
+@app.route("/api/list_keys", methods= ['POST'])
+def api_list_keys():
+    '''
+    This function is for api test
+    It will list all keys in the databases
+    '''
+    keys = sql_connection.get_keys()
+    key_list = []
+    if keys:
+        for key in keys:
+            key_list.append(key[0])
+    return jsonify({
+        "success":"true",
+        "keys":key_list
+    })
+
+@app.route("/api/key/<key_value>", methods = ['POST'])
+def api_key_search(key_value):
+    #call backend
+    data = api_call("GET","get",{"key":key_value})
+
+    #If the backend misses, look up the database
+    if data.status_code == 400:
+        result = sql_connection.search_key(key_value)
+        #if the key does not exist in database, return error message
+        if len(result) == 0:
+            return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"Unknown Key Value"
+                }
+            })
+        #if the key exists in database, retrive it from local file system
+        else:
+            filename = result[0][2]
+            content = api_key_content(filename,None)
+            return jsonify({
+                "success":"true",
+                "content":content
+            })
+    elif data.status_code == 200:
+        data = data.json()
+        value = data["value"]
+        content = api_key_content(None,value)
+        return jsonify({
+            "success":"true",
+            "content":content
+        })
+    else:
+        return jsonify({
+            "Success":"false",
+            "error":{
+                "code":201,
+                "message":"Unkown Error"
+            }
+        })
+@app.route("/api/upload",methods = ['POST'])
+def api_upload():
+    key = request.form.get('key')
+    file = request.files['file']
+    filename = file.filename
+    #if the request does not give file then return error code and message
+    if filename == '':
+        return jsonify({
+            "success":"false",
+            "error":{
+                "code":400,
+                "message":"No file given"
+            }
+        })
+    #if we have the file then store the file to local
+    api_image_store(file,filename)
+    
+    #front will encode the image and pass it to backend
+    value = image_encoder(filename)
+    upload_time = current_datetime()
+    parms = {"key":key,"value":value,"upload_time":upload_time}
+    result = api_call("POST","put",parms)
+
+    if result.status_code == 200:
+        print("Memcache image stored")
+    else:
+        print("Memcache error")
+    
+    sql_connection.add_entry(key,filename)
+    return jsonify({
+        "success":"true"
+    })
