@@ -95,7 +95,7 @@ def upload_picture():
         if result.status_code == 200:
             print(" - Frontend: backend stores image into memcache.")
         else:
-            print(" - Frontend: memcache failed to store image for unknown reason. Image will still be stored locally. ")
+            print(" - Frontend: memcache failed to store image for some reason. Check message from 'backend.memcache.*' for more help. Image will still be stored locally. ")
 
         # After update it with the memcache, frontend will add filename and key into db. 
         flash("Upload success")
