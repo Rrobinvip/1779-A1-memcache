@@ -54,15 +54,13 @@ def api_key_content(filename,decode_value):
     If the decode_value is not None, then it will return the decode value.
     If the decode is None, it will read the image file from the upload dir and encoded it to 64base
     '''
-    value = None
     if decode_value is not None:
-        value = decode_value.decode()
+        return decode_value
     else:
         final_path = os.path.join(LOCAL_UPLOADS_DIR,filename)
         file = open(final_path,'rb')
         encode_string = base64.b64encode(file.read())
-        value = encode_string.decode()
-    return value
+    return encode_string
 
 def api_image_store(file,filename):
     '''

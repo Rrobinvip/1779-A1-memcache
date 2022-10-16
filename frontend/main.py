@@ -7,7 +7,7 @@
 from glob import escape
 from tkinter.messagebox import NO
 from flask import render_template, url_for, request, redirect
-from flask import json, flash, jsonify
+from flask import flash, jsonify
 from frontend import app
 import requests
 import logging
@@ -30,7 +30,7 @@ from frontend.form import ClearForm
 from frontend.helper import api_call, api_image_store, allowed_file
 
 # Encode and decode img
-from frontend.helper import write_img_local, image_encoder, current_datetime,api_key_content,api_image_store
+from frontend.helper import write_img_local, image_encoder, current_datetime
 
 
 sql_connection = Data()
@@ -336,7 +336,8 @@ def api_key_search(key_value):
         #if the key exists in database, retrive it from local file system
         else:
             filename = result[0][2]
-            content = api_key_content(filename,None)
+            content = image_encoder(filename)
+            content = content.decode()
             return jsonify({
                 "success":"true",
                 "content":content
@@ -344,10 +345,9 @@ def api_key_search(key_value):
     elif data.status_code == 200:
         data = data.json()
         value = data["value"]
-        content = api_key_content(None,value)
         return jsonify({
             "success":"true",
-            "content":content
+            "content":value
         })
     else:
         return jsonify({
@@ -415,4 +415,68 @@ def api_upload():
                     "code":400,
                     "message":"Unknown error"
                 }
+        })
+
+@app.route("/api/nocache/upload", methods=['POST'])
+def api_nocache_upload():
+    key = request.form.get('key')
+    file = request.files['file']
+    filename = file.filename
+    
+    if filename == '':
+        return jsonify({
+            "success":"false",
+            "error":{
+                "code":400,
+                "message":"No file given"
+            }
+        })
+    if file and allowed_file(filename):
+        api_image_store(file,filename)
+        sql_connection.add_entry(key,filename)
+        return jsonify({
+            "success":"true"
+        })
+    else:
+        if not file:
+            return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"No file given"
+                }
+            })
+        if not allowed_file(filename):
+            return jsonify({
+                "success":"false",
+                "error":{
+                    "code":400,
+                    "message":"File type not allowed"
+                }
+            })
+        return jsonify({
+            "success":"false",
+            "error":{
+                "code":400,
+                "message":"Unknow error"
+            }
+        })
+
+@app.route("/api/nocache/key/<key_value>", methods = ['POST'])
+def api_nocache_key_search(key_value):
+    result = sql_connection.search_key(key_value)
+    if len(result) == 0:
+        return jsonify({
+            "success":"false",
+            "error":{
+                "code":400,
+                "message":"Unknown Key Value"
+            }
+        })
+    else:
+        filename = result[0][2]
+        content = image_encoder(filename).decode()
+        return jsonify({
+            "success":"true",
+            "content":content
         })
