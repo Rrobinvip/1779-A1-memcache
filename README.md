@@ -1,5 +1,11 @@
 # ECE 1779 A1 MEMCACHE - Group 17
 
+## To run
+Script must be executed with current shell with intergrated mode. In most cases, Ubuntu use BASH, and macOS use ZSH.
+`<shell> -i start.sh`
+
+To find out your shell with `echo $SHELL`.
+
 ## To create environment:
 1. Create the environment from the `environment.yml` with `conda env create -f environment.yml`
 1. Activate the new environment with `conda activate <name_env>`, in this case, the `<name_env>` is `MEMCACHE`
