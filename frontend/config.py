@@ -10,8 +10,8 @@ class Config(object):
     SECRET_KEY = "teeesssttt"
     UPLOADED_PHOTOS_DEST = "./frontend/static/uploads"
     DB_CONFIG = {
-        "user":"test_1",
-        "password":"19970808",
+        "user":"root",
+        "password":"ece1779pass",
         "host":"localhost",
-        "database":"memcache_test_1"
+        "database":"cloudcomputing"
     }
