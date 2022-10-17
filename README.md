@@ -1,5 +1,7 @@
 # ECE 1779 A1 MEMCACHE - Group 17
 
+Assignment completed, will be tag with "ece1779-assignment-1". This is the final commit. 
+
 ## To run
 Script must be executed with current shell with intergrated mode. In most cases, Ubuntu use BASH, and macOS use ZSH.
 `<shell> -i start.sh`
