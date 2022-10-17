@@ -30,11 +30,26 @@ find_in_conda_env(){
 
 echo "Checking conda env.."
 if find_in_conda_env ".*MEMCACHE.*" ; then
-    echo "Conda env detected, activate through -conda activate MEMCACHE-"
+    echo "Conda env detected, activating..."
+    conda info | egrep "conda version|active environment"
+    conda activate MEMCACHE
 else 
     echo "Conda env doesn't exist."
-    echo "Import conda env through -conda env create -f environment.yml-"
-    exit
+    echo "Importing conda env..."
+    conda info | egrep "conda version|active environment"
+    conda env create -f environment.yml
+    if find_in_conda_env ".*MEMCACHE.*" ; then
+        echo "Conda env installed, activating..."
+        conda info | egrep "conda version|active environment"
+        conda activate MEMCACHE
+    else
+        echo "Failed to import conda env, exit."
+        exit
+    fi
 fi
 
-echo "You are good to go. Activate conda env and run instances through -python3 run.py-"
+echo "You are good to go. Launching instance.."
+sleep 1s
+
+# Lauch instance
+python3 run.py
